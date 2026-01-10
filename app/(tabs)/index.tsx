@@ -1,98 +1,171 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useSession } from '@/constants/AuthContext';
+import { sendWhatsAppConfirmation, TEMPLATES } from '@/utils/interaktService';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    const { signOut, userParams } = useSession();
+    const [loading, setLoading] = useState<string | null>(null);
+    const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    const handleAction = async (actionType: 'BUY' | 'TRANSFER' | 'DELIVERY') => {
+        const phoneNumber = userParams?.phoneNumber;
+        if (!phoneNumber) {
+            Alert.alert("Error", "User phone number not found. Please login again.");
+            return;
+        }
+
+        let templateName = '';
+        let successMessage = '';
+        let bodyValues: string[] = [];
+
+        switch (actionType) {
+            case 'BUY':
+                templateName = TEMPLATES.BUY_GOLD;
+                successMessage = 'Buy Gold request initiated! Check WhatsApp.';
+                bodyValues = ['User', '10-Jan-2025', 'Gold 24K', '1g', '₹7500', '#123456'];
+                break;
+            case 'TRANSFER':
+                templateName = TEMPLATES.TRANSFER_GOLD;
+                successMessage = 'Transfer request initiated! Check WhatsApp.';
+                bodyValues = ['User', '1g', 'Recipient Name', '#TXN789'];
+                break;
+            case 'DELIVERY':
+                templateName = TEMPLATES.DELIVERY_GOLD;
+                successMessage = 'Delivery request initiated! Check WhatsApp.';
+                bodyValues = ['User', '#ORD456', '12-Jan-2025'];
+                break;
+        }
+
+        setLoading(actionType);
+        try {
+            await sendWhatsAppConfirmation(phoneNumber, templateName, bodyValues);
+            Alert.alert("Success", successMessage);
+        } catch (error: any) {
+            Alert.alert("Failed", "Could not send WhatsApp message. " + error.message);
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    return (
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Welcome!</Text>
+                <Text style={styles.subtitle}>Select an action below to proceed with your Gold transaction.</Text>
+            </View>
+
+            <View style={styles.buttonContainer}>
+                <ActionButton
+                    title="Buy Gold"
+                    subtitle="Purchase 24K Gold"
+                    iconName="cart"
+                    loading={loading === 'BUY'}
+                    onPress={() => handleAction('BUY')}
+                    color="#FFD700"
+                    textColor="#000"
+                />
+                <ActionButton
+                    title="Transfer Gold"
+                    subtitle="Send to another user"
+                    iconName="swap-horizontal"
+                    loading={loading === 'TRANSFER'}
+                    onPress={() => handleAction('TRANSFER')}
+                    color="#4CAF50" 
+                    textColor="#FFF"
+                />
+                <ActionButton
+                    title="Delivery Gold"
+                    subtitle="Get it delivered to home"
+                    iconName="cube"
+                    loading={loading === 'DELIVERY'}
+                    onPress={() => handleAction('DELIVERY')}
+                    color="#2196F3" 
+                    textColor="#FFF"
+                />
+            </View>
+
+            <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
+                <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+
+        </ScrollView>
+    );
+}
+
+function ActionButton({ title, subtitle, iconName, onPress, color, textColor, loading }: any) {
+    return (
+        <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: color || '#333' }]}
+            onPress={onPress}
+            disabled={loading}
+        >
+            <Ionicons name={iconName} size={32} color={textColor} style={{ marginRight: 16 }} />
+            <View style={{ flex: 1 }}>
+                <Text style={[styles.buttonTitle, { color: textColor }]}>{title}</Text>
+                <Text style={[styles.buttonSubtitle, { color: textColor }]}>{subtitle}</Text>
+            </View>
+            {loading && <ActivityIndicator color={textColor} />}
+        </TouchableOpacity>
+    )
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
+    contentContainer: {
+        padding: 20,
+        paddingTop: 60,
+    },
+    header: {
+        marginBottom: 30,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#FFD700',
+        marginBottom: 10,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#CCC',
+    },
+    buttonContainer: {
+        gap: 16,
+    },
+    actionButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 20,
+        borderRadius: 16,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    buttonTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    buttonSubtitle: {
+        fontSize: 12,
+        opacity: 0.8,
+    },
+    logoutButton: {
+        marginTop: 40,
+        alignItems: 'center',
+        padding: 16,
+    },
+    logoutText: {
+        color: '#FF6B6B',
+        fontSize: 16,
+    }
 });
