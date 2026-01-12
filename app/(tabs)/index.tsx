@@ -10,7 +10,7 @@ export default function HomeScreen() {
     const [loading, setLoading] = useState<string | null>(null);
     const router = useRouter();
 
-    const handleAction = async (actionType: 'BUY' | 'TRANSFER' | 'DELIVERY') => {
+    const handleAction = async (actionType: 'BUY' | 'TRANSFER' | 'DELIVERY' | 'COPY_OF_BOOKED_FOR' | 'PAYMENT_VAULT') => {
         const phoneNumber = userParams?.phoneNumber;
         if (!phoneNumber) {
             Alert.alert("Error", "User phone number not found. Please login again.");
@@ -36,6 +36,16 @@ export default function HomeScreen() {
                 templateName = TEMPLATES.DELIVERY_GOLD;
                 successMessage = 'Delivery request initiated! Check WhatsApp.';
                 bodyValues = ['User', '#ORD456', '12-Jan-2025'];
+                break;
+            case 'COPY_OF_BOOKED_FOR':
+                templateName = TEMPLATES.COPY_OF_BOOKED_FOR;
+                successMessage = 'Copy of booked for request initiated! Check WhatsApp.';
+                bodyValues = ['User', '#ORD456', '12-Jan-2025', 'Gold 24K', '1g', '₹7500', '₹7500', 'Confirmed'];
+                break;
+            case 'PAYMENT_VAULT':
+                templateName = TEMPLATES.PAYMENT_VAULT;
+                successMessage = 'Payment vault request initiated! Check WhatsApp.';
+                bodyValues = ['User', '#ORD456'];
                 break;
         }
 
@@ -73,7 +83,7 @@ export default function HomeScreen() {
                     iconName="swap-horizontal"
                     loading={loading === 'TRANSFER'}
                     onPress={() => handleAction('TRANSFER')}
-                    color="#4CAF50" 
+                    color="#4CAF50"
                     textColor="#FFF"
                 />
                 <ActionButton
@@ -82,7 +92,25 @@ export default function HomeScreen() {
                     iconName="cube"
                     loading={loading === 'DELIVERY'}
                     onPress={() => handleAction('DELIVERY')}
-                    color="#2196F3" 
+                    color="#2196F3"
+                    textColor="#FFF"
+                />
+                <ActionButton
+                    title="Copy of Booked for"
+                    subtitle="Copy of booked for"
+                    iconName="cube"
+                    loading={loading === 'COPY_OF_BOOKED_FOR'}
+                    onPress={() => handleAction('COPY_OF_BOOKED_FOR')}
+                    color="#2196F3"
+                    textColor="#FFF"
+                />
+                <ActionButton
+                    title="Payment Vault"
+                    subtitle="Payment vault"
+                    iconName="cube"
+                    loading={loading === 'PAYMENT_VAULT'}
+                    onPress={() => handleAction('PAYMENT_VAULT')}
+                    color="#2196F3"
                     textColor="#FFF"
                 />
             </View>

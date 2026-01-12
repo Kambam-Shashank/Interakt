@@ -4,6 +4,8 @@ export const TEMPLATES = {
     BUY_GOLD: 'booking_confirmation1',
     TRANSFER_GOLD: 'recieved_gold',
     DELIVERY_GOLD: 'deliverycom',
+    COPY_OF_BOOKED_FOR: 'copy_of_booked_for',
+    PAYMENT_VAULT: 'payment_vault',
 };
 
 
