@@ -25,7 +25,7 @@ export default function HomeScreen() {
             case 'BUY':
                 templateName = TEMPLATES.BUY_GOLD;
                 successMessage = 'Buy Gold request initiated! Check WhatsApp.';
-                bodyValues = ['User', '12-Jan-2025', 'Gold 24K', '1g', '₹7500', '#123456'];
+                bodyValues = ['User', '#123456', '12-Jan-2025', 'Gold 24K', '1g', '₹7500', '₹7500'];
                 break;
             case 'TRANSFER':
                 templateName = TEMPLATES.TRANSFER_GOLD;

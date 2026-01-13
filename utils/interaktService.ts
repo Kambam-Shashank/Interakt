@@ -1,7 +1,7 @@
 export const INTERAKT_API_KEY = "Q2Z5bmZGOTBmZ2ozYlo5NUowOEJmcU5NaWpWa0tKVF9ibU0zSnctVHZMVTo=";
 
 export const TEMPLATES = {
-    BUY_GOLD: 'booking_confirmation1',
+    BUY_GOLD: 'booking',
     TRANSFER_GOLD: 'recieved_gold',
     DELIVERY_GOLD: 'deliverycom',
     COPY_OF_BOOKED_FOR: 'copy_of_booked_for',
@@ -17,7 +17,7 @@ interface InteraktTemplatePayload {
     template: {
         name: string;
         languageCode: string;
-        bodyValues?: string[]; 
+        bodyValues?: string[];
         headerValues?: string[];
     }
 }
