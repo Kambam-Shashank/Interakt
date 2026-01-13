@@ -25,7 +25,7 @@ export default function HomeScreen() {
             case 'BUY':
                 templateName = TEMPLATES.BUY_GOLD;
                 successMessage = 'Buy Gold request initiated! Check WhatsApp.';
-                bodyValues = ['User', '10-Jan-2025', 'Gold 24K', '1g', '₹7500', '#123456'];
+                bodyValues = ['User', '12-Jan-2025', 'Gold 24K', '1g', '₹7500', '#123456'];
                 break;
             case 'TRANSFER':
                 templateName = TEMPLATES.TRANSFER_GOLD;
@@ -35,7 +35,7 @@ export default function HomeScreen() {
             case 'DELIVERY':
                 templateName = TEMPLATES.DELIVERY_GOLD;
                 successMessage = 'Delivery request initiated! Check WhatsApp.';
-                bodyValues = ['User', '#ORD456', '12-Jan-2025'];
+                bodyValues = ['User', '#ORD456', '15-Jan-2025'];
                 break;
             case 'COPY_OF_BOOKED_FOR':
                 templateName = TEMPLATES.COPY_OF_BOOKED_FOR;
@@ -70,7 +70,7 @@ export default function HomeScreen() {
             <View style={styles.buttonContainer}>
                 <ActionButton
                     title="Buy Gold"
-                    subtitle="Purchase 24K Gold"
+                    subtitle="Purchase 24K Pure Gold"
                     iconName="cart"
                     loading={loading === 'BUY'}
                     onPress={() => handleAction('BUY')}
@@ -79,7 +79,7 @@ export default function HomeScreen() {
                 />
                 <ActionButton
                     title="Transfer Gold"
-                    subtitle="Send to another user"
+                    subtitle="Send gold to another user"
                     iconName="swap-horizontal"
                     loading={loading === 'TRANSFER'}
                     onPress={() => handleAction('TRANSFER')}
@@ -88,7 +88,7 @@ export default function HomeScreen() {
                 />
                 <ActionButton
                     title="Delivery Gold"
-                    subtitle="Get it delivered to home"
+                    subtitle="Home delivery service"
                     iconName="cube"
                     loading={loading === 'DELIVERY'}
                     onPress={() => handleAction('DELIVERY')}
@@ -96,21 +96,21 @@ export default function HomeScreen() {
                     textColor="#FFF"
                 />
                 <ActionButton
-                    title="Copy of Booked for"
-                    subtitle="Copy of booked for"
-                    iconName="cube"
+                    title="Booking History"
+                    subtitle="View your past bookings"
+                    iconName="list"
                     loading={loading === 'COPY_OF_BOOKED_FOR'}
                     onPress={() => handleAction('COPY_OF_BOOKED_FOR')}
-                    color="#2196F3"
+                    color="#A020F0"
                     textColor="#FFF"
                 />
                 <ActionButton
                     title="Payment Vault"
-                    subtitle="Payment vault"
-                    iconName="cube"
+                    subtitle="Secure payment recordings"
+                    iconName="wallet"
                     loading={loading === 'PAYMENT_VAULT'}
                     onPress={() => handleAction('PAYMENT_VAULT')}
-                    color="#2196F3"
+                    color="#FF4500"
                     textColor="#FFF"
                 />
             </View>
